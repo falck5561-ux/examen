@@ -12,8 +12,10 @@ Centro interactivo de estudio para el segundo parcial de Economía.
 - Simulacro completo de 20 preguntas.
 - Buscador de temas y preguntas.
 - Favoritos para módulos y preguntas.
+- Biblioteca de guardados para volver a los temas difíciles.
 - Progreso, racha y mejor puntuación.
 - Tema claro/oscuro.
+- Navegación inferior optimizada para celular.
 - Persistencia automática con `localStorage`.
 
 ## Ejecutar localmente

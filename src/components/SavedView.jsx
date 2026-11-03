@@ -1,0 +1,15 @@
+import { ArrowRight, BookmarkCheck, BookOpen, Heart, Trash2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+export default function SavedView({ modules, questions, favoriteModules, favoriteQuestions, onOpenModule, onStartQuiz, onToggleModule, onToggleQuestion }) {
+  const savedModules = modules.filter((module) => favoriteModules.includes(module.id))
+  const savedQuestions = questions.filter((question) => favoriteQuestions.includes(question.id))
+  const isEmpty = savedModules.length === 0 && savedQuestions.length === 0
+  return <motion.div className="view-content" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+    <div className="page-intro"><div><span className="section-kicker">TU BIBLIOTECA</span><h2>Guardados</h2><p>Conserva módulos y preguntas que quieras volver a estudiar antes del examen.</p></div><div className="saved-count"><BookmarkCheck size={17} /> {savedModules.length + savedQuestions.length} guardados</div></div>
+    {isEmpty ? <div className="empty-state content-empty"><BookmarkCheck size={42} /><h3>Aún no has guardado nada</h3><p>Usa el icono de marcador en un módulo o durante una pregunta para crear tu lista personal.</p><button className="primary-button" onClick={() => onStartQuiz('quick')}>Empezar a practicar <ArrowRight size={16} /></button></div> : <div className="saved-layout">
+      <section className="saved-section"><div className="saved-section-heading"><h3><BookOpen size={18} /> Módulos guardados</h3><span>{savedModules.length}</span></div>{savedModules.length === 0 ? <p className="muted-paragraph">Todavía no guardas módulos.</p> : <div className="saved-module-list">{savedModules.map((module) => <div className="saved-module-row" key={module.id} style={{ '--module-color': module.color, '--module-soft': module.soft }}><span className="saved-module-icon">{module.icon}</span><div><strong>{module.title}</strong><span>{module.summary}</span></div><button className="row-action" onClick={() => onOpenModule(module.id)} aria-label={`Abrir ${module.title}`}><ArrowRight size={17} /></button><button className="row-delete" onClick={() => onToggleModule(module.id)} aria-label={`Quitar ${module.title}`}><Trash2 size={16} /></button></div>)}</div>}</section>
+      <section className="saved-section"><div className="saved-section-heading"><h3><Heart size={18} /> Preguntas guardadas</h3><span>{savedQuestions.length}</span></div>{savedQuestions.length === 0 ? <p className="muted-paragraph">Guarda preguntas difíciles para repasarlas después.</p> : <div className="saved-question-list">{savedQuestions.map((question) => <div className="saved-question-row" key={question.id}><div><span>{question.moduleTitle}</span><strong>{question.prompt}</strong></div><button className="row-action" onClick={() => onStartQuiz('module', question.moduleId)} aria-label="Practicar módulo"><ArrowRight size={17} /></button><button className="row-delete" onClick={() => onToggleQuestion(question.id)} aria-label="Quitar pregunta"><Trash2 size={16} /></button></div>)}</div>}</section>
+    </div>}
+  </motion.div>
+}

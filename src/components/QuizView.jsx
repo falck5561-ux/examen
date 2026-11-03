@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowRight, Bookmark, Check, CircleAlert, Clock3, Flag, Hear
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 
-export default function QuizView({ questions, title, onExit, onComplete, savedQuestionIds, onToggleQuestionFavorite, initialMode = 'practice' }) {
+export default function QuizView({ questions, title, onExit, onComplete, onSessionFinish, savedQuestionIds, onToggleQuestionFavorite, initialMode = 'practice' }) {
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [results, setResults] = useState([])
@@ -18,7 +18,7 @@ export default function QuizView({ questions, title, onExit, onComplete, savedQu
     else onComplete(current.id, false)
   }
   const goNext = () => {
-    if (index === questions.length - 1) { setFinished(true); return }
+    if (index === questions.length - 1) { onSessionFinish(score, questions.length); setFinished(true); return }
     setIndex((value) => value + 1)
     setSelected(null)
   }

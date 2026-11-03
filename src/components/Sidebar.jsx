@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion'
-import { BookOpen, Brain, ClipboardCheck, GraduationCap, LayoutDashboard, Menu, Moon, RotateCcw, Sun, X } from 'lucide-react'
+import { BookOpen, Brain, BookmarkCheck, ClipboardCheck, GraduationCap, LayoutDashboard, Moon, RotateCcw, Sun, X } from 'lucide-react'
 
 const navigation = [
   { id: 'dashboard', label: 'Inicio', icon: LayoutDashboard },
   { id: 'modules', label: 'Módulos', icon: BookOpen },
   { id: 'flashcards', label: 'Tarjetas', icon: Brain },
   { id: 'quiz', label: 'Preguntas', icon: ClipboardCheck },
+  { id: 'saved', label: 'Guardados', icon: BookmarkCheck },
 ]
 
 export default function Sidebar({ activeView, setActiveView, isOpen, setIsOpen, darkMode, setDarkMode, onReset }) {
@@ -45,6 +46,14 @@ export default function Sidebar({ activeView, setActiveView, isOpen, setIsOpen, 
           </div>
         </div>
       </aside>
+      <nav className="mobile-bottom-nav" aria-label="Navegación móvil">
+        {navigation.slice(0, 4).map(({ id, label, icon: Icon }) => (
+          <button key={id} className={activeView === id ? 'active' : ''} onClick={() => setActiveView(id)}>
+            <Icon size={18} />
+            <span>{label === 'Preguntas' ? 'Quiz' : label}</span>
+          </button>
+        ))}
+      </nav>
     </>
   )
 }

@@ -6,6 +6,7 @@ import ModuleView from './components/ModuleView.jsx'
 import FlashcardsView from './components/FlashcardsView.jsx'
 import QuizView from './components/QuizView.jsx'
 import SearchResults from './components/SearchResults.jsx'
+import SavedView from './components/SavedView.jsx'
 import { allFlashcards, allQuestions, getModule, modules } from './data/studyData.js'
 import { useLocalStorage } from './hooks/useLocalStorage.js'
 
@@ -59,10 +60,14 @@ export default function App() {
   const completeQuiz = (id, correct) => {
     markAnswered(id, correct)
   }
+  const finishQuiz = (score, total) => {
+    const percentage = total ? Math.round((score / total) * 100) : 0
+    setProgress((current) => ({ ...current, bestScore: Math.max(current.bestScore || 0, percentage) }))
+  }
   const onQuizComplete = (id, correct) => completeQuiz(id, correct)
   const toggleQuestionFavorite = (id) => setProgress((current) => ({ ...current, favorites: current.favorites.includes(id) ? current.favorites.filter((item) => item !== id) : [...current.favorites, id] }))
   const toggleModuleFavorite = (id) => setProgress((current) => ({ ...current, favoriteModules: current.favoriteModules.includes(id) ? current.favoriteModules.filter((item) => item !== id) : [...current.favoriteModules, id] }))
-  const resetProgress = () => { if (window.confirm('¿Quieres borrar todo tu progreso guardado?')) setProgress(initialProgress) }
+  const resetProgress = () => { if (window.confirm('¿Quieres borrar todo tu progreso guardado?')) { setProgress(initialProgress); setActiveView('dashboard'); setSearch('') } }
   const results = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return []
@@ -76,10 +81,11 @@ export default function App() {
     if (activeView === 'dashboard') return <Dashboard modules={modules} getProgress={getProgress} stats={stats} onOpenModule={openModule} onStartQuiz={startQuiz} onOpenFlashcards={() => setActiveView('flashcards')} />
     if (activeView === 'modules') return <div className="view-content"><div className="page-intro"><div><span className="section-kicker">RUTA DE ESTUDIO</span><h2>Todos tus módulos</h2><p>Elige un tema y empieza una sesión de práctica.</p></div></div><div className="modules-grid">{modules.map((module) => <div key={module.id} className="module-card-wrapper"><button className="module-card" style={{ '--module-color': module.color, '--module-soft': module.soft }} onClick={() => openModule(module.id)}><div className="module-card-top"><span className="module-icon">{module.icon}</span><span className="module-arrow">→</span></div><span className="eyebrow">{module.eyebrow}</span><h3>{module.title}</h3><p>{module.summary}</p><div className="module-progress-line"><span style={{ width: `${(getProgress(module.id).completed / getProgress(module.id).total) * 100}%`, background: module.color }} /></div><div className="module-card-footer"><span>{getProgress(module.id).completed}/{getProgress(module.id).total} preguntas dominadas</span></div></button><button className="module-mini-quiz" onClick={() => startQuiz('module', module.id)}>Practicar ahora →</button></div>)}</div></div>
     if (activeView === 'flashcards') return <FlashcardsView cards={allFlashcards} onBack={() => setActiveView('dashboard')} />
-    if (activeView === 'quiz') return <QuizView questions={quizQuestions} title={quizTitle} initialMode={quizMode} onExit={() => setActiveView('dashboard')} onComplete={onQuizComplete} savedQuestionIds={progress.favorites} onToggleQuestionFavorite={toggleQuestionFavorite} />
+    if (activeView === 'saved') return <SavedView modules={modules} questions={allQuestions} favoriteModules={progress.favoriteModules} favoriteQuestions={progress.favorites} onOpenModule={openModule} onStartQuiz={startQuiz} onToggleModule={toggleModuleFavorite} onToggleQuestion={toggleQuestionFavorite} />
+    if (activeView === 'quiz') return <QuizView questions={quizQuestions} title={quizTitle} initialMode={quizMode} onExit={() => setActiveView('dashboard')} onComplete={onQuizComplete} onSessionFinish={finishQuiz} savedQuestionIds={progress.favorites} onToggleQuestionFavorite={toggleQuestionFavorite} />
     if (activeView === 'module' && selectedModule) return <ModuleView module={getModule(selectedModule)} progress={getProgress(selectedModule)} favorites={progress.favoriteModules} onBack={() => setActiveView('modules')} onStart={(id) => startQuiz('module', id)} onToggleFavorite={toggleModuleFavorite} />
     return null
   }
 
-  return <div className={`app-shell ${darkMode ? 'dark-mode' : ''}`}><Sidebar activeView={activeView} setActiveView={setActiveView} isOpen={menuOpen} setIsOpen={setMenuOpen} darkMode={darkMode} setDarkMode={setDarkMode} onReset={resetProgress} /><main className="main-area"><Topbar onOpenMenu={() => setMenuOpen(true)} search={search} setSearch={setSearch} onQuickQuiz={() => startQuiz('quick')} />{renderView()}</main></div>
+  return <div className={`app-shell ${darkMode ? 'dark-mode' : ''}`}><Sidebar activeView={activeView} setActiveView={setActiveView} isOpen={menuOpen} setIsOpen={setMenuOpen} darkMode={darkMode} setDarkMode={setDarkMode} onReset={resetProgress} /><main className="main-area"><Topbar onOpenMenu={() => setMenuOpen(true)} search={search} setSearch={setSearch} onClearSearch={() => setSearch('')} onQuickQuiz={() => startQuiz('quick')} />{renderView()}</main></div>
 }
