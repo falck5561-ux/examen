@@ -23,6 +23,9 @@ export default function QuizView({ questions, title, onExit, onComplete, onSessi
     setSelected(null)
   }
   const restart = () => { setIndex(0); setSelected(null); setResults([]); setFinished(false) }
+  if (!questions.length) {
+    return <motion.div className="quiz-result empty-quiz" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}><div className="result-medal"><CircleAlert size={34} /></div><h2>No hay preguntas cargadas</h2><p>Regresa al inicio y comienza un repaso para generar tu sesión.</p><button className="primary-button" onClick={onExit}><ArrowLeft size={16} /> Volver al inicio</button></motion.div>
+  }
   if (finished) {
     const percentage = Math.round((score / questions.length) * 100)
     return <motion.div className="quiz-result" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}><div className="result-medal"><Trophy size={38} /></div><span className="section-kicker">SESIÓN TERMINADA</span><h2>{percentage >= 80 ? '¡Vas muy bien!' : 'Cada error te enseña algo'}</h2><p>Terminaste <strong>{title}</strong> y acertaste {score} de {questions.length} preguntas.</p><div className="result-score"><strong>{percentage}%</strong><span>de aciertos</span></div><div className="result-actions"><button className="primary-button" onClick={restart}><RotateCcw size={16} /> Repetir sesión</button><button className="secondary-button" onClick={onExit}>Volver al inicio</button></div></motion.div>

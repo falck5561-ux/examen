@@ -68,6 +68,13 @@ export default function App() {
   const toggleQuestionFavorite = (id) => setProgress((current) => ({ ...current, favorites: current.favorites.includes(id) ? current.favorites.filter((item) => item !== id) : [...current.favorites, id] }))
   const toggleModuleFavorite = (id) => setProgress((current) => ({ ...current, favoriteModules: current.favoriteModules.includes(id) ? current.favoriteModules.filter((item) => item !== id) : [...current.favoriteModules, id] }))
   const resetProgress = () => { if (window.confirm('¿Quieres borrar todo tu progreso guardado?')) { setProgress(initialProgress); setActiveView('dashboard'); setSearch('') } }
+  const navigate = (view) => {
+    if (view === 'quiz') {
+      startQuiz('quick')
+      return
+    }
+    setActiveView(view)
+  }
   const results = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return []
@@ -87,5 +94,5 @@ export default function App() {
     return null
   }
 
-  return <div className={`app-shell ${darkMode ? 'dark-mode' : ''}`}><Sidebar activeView={activeView} setActiveView={setActiveView} isOpen={menuOpen} setIsOpen={setMenuOpen} darkMode={darkMode} setDarkMode={setDarkMode} onReset={resetProgress} /><main className="main-area"><Topbar onOpenMenu={() => setMenuOpen(true)} search={search} setSearch={setSearch} onClearSearch={() => setSearch('')} onQuickQuiz={() => startQuiz('quick')} />{renderView()}</main></div>
+  return <div className={`app-shell ${darkMode ? 'dark-mode' : ''}`}><Sidebar activeView={activeView} setActiveView={navigate} isOpen={menuOpen} setIsOpen={setMenuOpen} darkMode={darkMode} setDarkMode={setDarkMode} onReset={resetProgress} /><main className="main-area"><Topbar onOpenMenu={() => setMenuOpen(true)} search={search} setSearch={setSearch} onClearSearch={() => setSearch('')} onQuickQuiz={() => startQuiz('quick')} />{renderView()}</main></div>
 }
