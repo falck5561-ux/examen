@@ -1,0 +1,6 @@
+import { ArrowRight, SearchX } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+export default function SearchResults({ results, query, onOpenModule, onStartQuiz }) {
+  return <motion.div className="search-results" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}><div className="search-heading"><div><span className="section-kicker">RESULTADOS</span><h2>Encontramos esto para “{query}”</h2></div><span>{results.length} coincidencias</span></div>{results.length === 0 ? <div className="empty-state"><SearchX size={38} /><h3>No encontramos coincidencias</h3><p>Prueba con “Estado”, “dinero”, “inflación” o “TLCAN”.</p></div> : <div className="search-result-grid">{results.map((result) => <div className="result-card" key={`${result.kind}-${result.id}`}><div className="result-card-top"><span className="result-kind">{result.kind === 'module' ? 'MÓDULO' : 'PREGUNTA'}</span><span>{result.moduleTitle}</span></div><h3>{result.title}</h3><p>{result.description}</p><button onClick={() => result.kind === 'module' ? onOpenModule(result.id) : onStartQuiz(result.moduleId)}>{result.kind === 'module' ? 'Abrir módulo' : 'Practicar pregunta'} <ArrowRight size={15} /></button></div>)}</div>}</motion.div>
+}
